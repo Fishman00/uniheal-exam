@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>愈商学社 | 高级认证实战系统 (全量版)</title>
+    <style>
+        :root {
+            --primary-color: #2c5f58;
+            --accent-color: #d4a373;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --white: #ffffff;
+            --error: #e74c3c;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* 登录遮罩 */
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(44, 95, 88, 0.98); display: flex;
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+        .login-box {
+            background: white; padding: 2.5rem; border-radius: 12px;
+            width: 90%; max-width: 400px; text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .login-box input {
+            width: 100%; padding: 12px; margin-bottom: 1rem;
+            border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;
+        }
+        .login-box button {
+            width: 100%; padding: 12px; background-color: var(--accent-color);
+            color: white; border: none; border-radius: 6px; cursor: pointer;
+        }
+
+        /* 布局 */
+        header {
+            background-color: var(--primary-color); color: var(--white);
+            padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;
+        }
+        .logout-btn { 
+            background: none; border: 1px solid white; color: white; 
+            padding: 4px 10px; border-radius: 4px; cursor: pointer; margin-left: 10px;
+        }
+
+        nav {
+            background: var(--white); display: flex; justify-content: center;
+            border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100;
+        }
+        nav button {
+            padding: 1rem 1.5rem; border: none; background: none; font-size: 1rem;
+            cursor: pointer; color: #666; border-bottom: 3px solid transparent;
+        }
+        nav button.active {
+            color: var(--primary-color); border-bottom-color: var(--primary-color); font-weight: bold;
+        }
+
+        main { max-width: 800px; margin: 2rem auto; width: 90%; padding-bottom: 50px; }
+
+        .card {
+            background: var(--white); border-radius: 12px; padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 1.5rem;
+        }
+
+        .badge {
+            background-color: var(--accent-color); color: white; padding: 4px 8px;
+            border-radius: 4px; font-size: 0.8rem; margin-right: 8px;
+        }
+        
+        .question-meta { color: #888; font-size: 0.85rem; margin-bottom: 10px; }
+        .question-text { font-size: 1.2rem; line-height: 1.6; margin-bottom: 1.5rem; font-weight: 600; }
+
+        .options label {
+            display: block; padding: 12px 15px; border: 1px solid #eee;
+            border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: background 0.2s;
+        }
+        .options label:hover { background-color: #f9f9f9; }
+        .options input { margin-right: 10px; }
+
+        .btn {
+            background-color: var(--primary-color); color: white; border: none;
+            padding: 10px 25px; border-radius: 25px; cursor: pointer; font-size: 1rem; margin-right: 10px;
+        }
+        .btn-outline {
+            background-color: transparent; border: 1px solid var(--primary-color); color: var(--primary-color);
+        }
+
+        .feedback {
+            margin-top: 1.5rem; padding: 1rem; border-radius: 8px;
+            background-color: #e8f5e9; border: 1px solid #c8e6c9; display: none;
+        }
+        .feedback.error { background-color: #ffebee; border: 1px solid #ffcdd2; }
+
+        textarea {
+            width: 100%; height: 120px; padding: 10px; border: 1px solid #ccc;
+            border-radius: 8px; margin-bottom: 10px; font-family: inherit; box-sizing: border-box;
+        }
+
+        .controls { display: flex; justify-content: space-between; margin-top: 2rem; }
+        
+        .stats-panel {
+            display: flex; gap: 10px; margin-bottom: 20px;
+        }
+        .stat-card {
+            flex: 1; background: white; padding: 10px; border-radius: 8px;
+            text-align: center; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .stat-val { font-size: 1.2rem; font-weight: bold; color: var(--primary-color); display: block;}
+
+        .hidden { display: none !important; }
+        
+        /* 搜索跳转栏 */
+        .jump-bar {
+            margin-bottom: 15px; text-align: right;
+        }
+        .jump-bar input {
+            padding: 5px; border-radius: 4px; border: 1px solid #ddd; width: 60px; text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="login-overlay">
+    <div class="login-box">
+        <h2>愈商学社·题库全量版</h2>
+        <p style="color:#666; margin-bottom: 20px;">请输入会员专属通行证</p>
+        <input type="password" id="access-code" placeholder="输入通行码">
+        <button onclick="handleLogin()">解锁全套题库</button>
+        <p id="login-msg" style="color: var(--error); margin-top: 10px; font-size: 0.9rem;"></p>
+    </div>
+</div>
+
+<div id="app-container" class="hidden">
+    <header>
+        <div>
+            <h1 style="margin:0; font-size:1.2rem;">愈商学社</h1>
+            <span style="font-size:0.8rem; opacity:0.8;">UNIHEAL 认证实战系统</span>
+        </div>
+        <div class="user-info">
+            <span id="member-id">学员：Guest</span>
+            <button class="logout-btn" onclick="logout()">退出</button>
+        </div>
+    </header>
+
+    <nav>
+        <button class="tab-btn active" onclick="switchSubject('subject1')">科目一：基础理论</button>
+        <button class="tab-btn" onclick="switchSubject('subject2')">科目二：技能实操</button>
+        <button class="tab-btn" onclick="switchSubject('subject3')">科目三：伦理法规</button>
+    </nav>
+
+    <main>
+        <div class="stats-panel">
+            <div class="stat-card"><span class="stat-val" id="stat-total">0</span>当前科目题数</div>
+            <div class="stat-card"><span class="stat-val" id="stat-done">0</span>已完成</div>
+            <div class="stat-card"><span class="stat-val" id="stat-wrong" style="color:var(--error)">0</span>错题数</div>
+        </div>
+
+        <div class="jump-bar">
+            跳转至第 <input type="number" id="jump-input" min="1"> 题 
+            <button class="btn-outline" style="padding: 4px 10px; font-size: 0.8rem;" onclick="jumpToQuestion()">GO</button>
+        </div>
+
+        <div class="card" id="question-card">
+            </div>
+        
+        <div class="controls">
+            <button class="btn btn-outline" onclick="changeQuestion(-1)">上一题</button>
+            <div style="text-align: center; color: #999; line-height: 40px;" id="page-indicator">1/1</div>
+            <div>
+                <button class="btn" onclick="submitAnswer()" id="submit-btn">提交答案</button>
+                <button class="btn btn-outline" onclick="changeQuestion(1)">下一题</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // ==========================================
+    // ⚠️ 核心区域：请在此处粘贴原始文本
+    // ==========================================
+    
+    // 1. 请将【科目一】PDF中的全部文字粘贴到下方的反引号 `` 之间
+    const rawSubject1 = `
+科目一：基础理论模块(单选 180，多选 40，简答 40)
+
+单选题（180 题）
+
+1. 皮亚杰认知发展阶段理论中"客体永存性"概念出现在哪个阶段？
+
+A. 感知运动阶段
+
+B. 前运算阶段
+
+C. 具体运算阶段
+
+D. 形式运算阶段
+
+答案：A
+
+(此处省略，请将科目一剩余内容完整粘贴覆盖此处...)
+    `;
+
+    // 2. 请将【科目二】PDF中的全部文字粘贴到下方的反引号 `` 之间
+    const rawSubject2 = `
+科目二：技能实操模块（46 题）
+
+案例分析题（46 题）
+
+1. 案例：某互联网公司员工普遍存在“睡眠障碍+社交退缩”的亚健康状态。请设计一套结合正念冥想与呼吸疗法的 8周干预计划，简述每周的目标与方法。
+
+答案：系统评分
+
+(此处省略，请将科目二剩余内容完整粘贴覆盖此处...)
+    `;
+
+    // 3. 请将【科目三】PDF中的全部文字粘贴到下方的反引号 `` 之间
+    const rawSubject3 = `
+科目三：伦理与法规模块（46 题）
+
+论述题（46 题）
+
+1. 某咨询师在社区疗愈活动中遇到服务对象表达了明显的心理困扰和潜在风险行为暗示，但拒绝让咨询师联系家属。请依据中国相关法律和职业伦理说明咨询师应如何应对该情形。
+
+答案：系统评分
+
+(此处省略，请将科目三剩余内容完整粘贴覆盖此处...)
+    `;
+
+    // ==========================================
+    // ⚠️ 智能解析引擎 (自动处理粘贴的文本)
+    // ==========================================
+    const fullQuestionBank = { subject1: [], subject2: [], subject3: [] };
+
+    function parseRawText(text, subjectKey, defaultType, defaultCat) {
+        const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+        let currentQ = null;
+        let currentType = defaultType; // single, multiple, text
+        let currentCategory = defaultCat;
+
+        // 识别科目一中的不同题型区块
+        const typeKeywords = {
+            "单选题": { type: "single", cat: "单选题" },
+            "多选题": { type: "multiple", cat: "多选题" },
+            "简答题": { type: "text", cat: "简答题" },
+            "案例分析": { type: "text", cat: "案例分析" },
+            "论述题": { type: "text", cat: "论述题" }
+        };
+
+        lines.forEach(line => {
+            // 1. 检查是否切换了题型区块 (仅针对有混合题型的科目)
+            for (let k in typeKeywords) {
+                if (line.includes(k) && (line.includes("题）") || line.includes("题)"))) {
+                    currentType = typeKeywords[k].type;
+                    currentCategory = typeKeywords[k].cat;
+                }
+            }
+
+            // 2. 匹配题目 (支持 "1. " 或 "1、")
+            // 排除 "单选题（180 题）" 这种标题行，只匹配以数字开头且后面跟标点的
+            const qMatch = line.match(/^(\d+)[.、]\s*(.*)/);
+            if (qMatch) {
+                if (currentQ) fullQuestionBank[subjectKey].push(currentQ);
+                currentQ = {
+                    id: parseInt(qMatch[1]),
+                    type: currentType,
+                    category: currentCategory,
+                    question: qMatch[2], // 初始题目内容
+                    options: [],
+                    answer: "",
+                    explanation: `出自${currentCategory}第${qMatch[1]}题`
+                };
+                return;
+            }
+
+            // 3. 如果当前行不是题目，且有currentQ，则可能是题目内容的延续、选项或答案
+            if (currentQ) {
+                // 匹配选项 (A. xxx)
+                const optMatch = line.match(/^([A-E])[.、]\s*(.*)/);
+                if (optMatch && (currentQ.type === 'single' || currentQ.type === 'multiple')) {
+                    currentQ.options.push(line); // 保存完整选项文本
+                    return;
+                }
+
+                // 匹配答案
+                const ansMatch = line.match(/^答案[：:]\s*(.*)/);
+                if (ansMatch) {
+                    let ansText = ansMatch[1].trim();
+                    if (currentQ.type === 'multiple') {
+                        currentQ.answer = ansText.split('').filter(c => /[A-E]/.test(c));
+                    } else {
+                        currentQ.answer = ansText;
+                    }
+                    return;
+                }
+
+                // 如果既不是选项也不是答案，且还没遇到选项/答案，可能是题目描述的第二行
+                if (currentQ.options.length === 0 && !currentQ.answer) {
+                    // 简单判断：如果这行不包含"[source"，则拼接到题目后
+                    if (!line.includes('[source')) {
+                        currentQ.question += " " + line;
+                    }
+                }
+            }
+        });
+
+        // 推入最后一题
+        if (currentQ) fullQuestionBank[subjectKey].push(currentQ);
+    }
+
+    // 系统启动时执行解析
+    function initData() {
+        parseRawText(rawSubject1, 'subject1', 'single', '单选题');
+        parseRawText(rawSubject2, 'subject2', 'text', '案例分析');
+        parseRawText(rawSubject3, 'subject3', 'text', '论述题');
+        console.log("题库解析完成", fullQuestionBank);
+    }
+
+    // ==========================================
+    // 逻辑控制 (登录、交互)
+    // ==========================================
+    const PASS_CODE = "YSXS2025"; // ✅ 在这里设置你的社群密码
+    let state = { subject: 'subject1', index: 0, answers: {}, mode: 'practice' };
+    let stats = { done: 0, wrong: 0 };
+
+    window.onload = function() {
+        if(localStorage.getItem('uniheal_user')) {
+            showApp(localStorage.getItem('uniheal_user'));
+        }
+    };
+
+    function handleLogin() {
+        const input = document.getElementById('access-code').value;
+        if(input === PASS_CODE) {
+            const userId = 'VIP_' + Math.floor(Math.random()*8888);
+            localStorage.setItem('uniheal_user', userId);
+            showApp(userId);
+        } else {
+            document.getElementById('login-msg').innerText = "密码错误，请关注愈商学社公众号获取";
+        }
+    }
+
+    function showApp(userId) {
+        initData(); // 先解析数据
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('app-container').classList.remove('hidden');
+        document.getElementById('member-id').innerText = userId;
+        loadSubject('subject1');
+    }
+
+    function logout() {
+        localStorage.removeItem('uniheal_user');
+        location.reload();
+    }
+
+    function switchSubject(sub) {
+        state.subject = sub;
+        state.index = 0;
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.onclick.toString().includes(sub)) btn.classList.add('active');
+        });
+        loadSubject(sub);
+    }
+
+    function loadSubject(sub) {
+        state.index = 0;
+        updateStats();
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        const list = fullQuestionBank[state.subject];
+        if(!list || list.length === 0) {
+            document.getElementById('question-card').innerHTML = "<p>数据加载中或无数据，请检查代码中的粘贴区域。</p>";
+            return;
+        }
+        const data = list[state.index];
+        const card = document.getElementById('question-card');
+        
+        document.getElementById('page-indicator').innerText = `${state.index + 1} / ${list.length}`;
+        document.getElementById('stat-total').innerText = list.length;
+
+        let html = `
+            <div class="question-meta">
+                <span class="badge">${data.category}</span>
+                <span>ID: ${data.id}</span>
+            </div>
+            <div class="question-text">${data.question}</div>
+        `;
+
+        if (data.type === 'single' || data.type === 'multiple') {
+            const inputType = data.type === 'single' ? 'radio' : 'checkbox';
+            html += `<div class="options">`;
+            data.options.forEach((opt) => {
+                // 提取选项字母，如 "A. xxx" -> value="A"
+                const val = opt.charAt(0); 
+                html += `
+                    <label onclick="selectOption(this)">
+                        <input type="${inputType}" name="q_opt" value="${val}">
+                        ${opt}
+                    </label>
+                `;
+            });
+            html += `</div>`;
+        } else {
+            html += `<textarea placeholder="【模拟实战】在此输入你的思考要点..."></textarea>`;
+        }
+
+        html += `
+            <div id="feedback" class="feedback">
+                <strong>💡 参考解析：</strong><br>
+                <div style="margin:5px 0; color:#2c5f58; font-weight:bold;">${Array.isArray(data.answer) ? data.answer.join('') : data.answer}</div>
+                <div style="font-size:0.9rem; color:#666;">${data.explanation}</div>
+            </div>
+        `;
+
+        card.innerHTML = html;
+        resetSubmitBtn();
+    }
+
+    function submitAnswer() {
+        const list = fullQuestionBank[state.subject];
+        const data = list[state.index];
+        const feedback = document.getElementById('feedback');
+        
+        if(data.type === 'single' || data.type === 'multiple') {
+            const checked = document.querySelectorAll('input[name="q_opt"]:checked');
+            if(checked.length === 0) return alert('请先选择答案');
+            
+            const userVal = Array.from(checked).map(c => c.value).sort();
+            const correctVal = Array.isArray(data.answer) ? data.answer.sort() : [data.answer];
+            
+            const isCorrect = JSON.stringify(userVal) === JSON.stringify(correctVal);
+            
+            if(isCorrect) {
+                feedback.classList.remove('error');
+                feedback.innerHTML = `<strong>✅ 回答正确</strong>`;
+                stats.done++;
+            } else {
+                feedback.classList.add('error');
+                feedback.innerHTML = `<strong>❌ 回答错误</strong><br>正确答案：${correctVal.join('')}`;
+                stats.done++;
+                stats.wrong++;
+            }
+        } else {
+            feedback.classList.remove('error');
+        }
+
+        feedback.style.display = 'block';
+        document.getElementById('submit-btn').disabled = true;
+        document.getElementById('submit-btn').innerText = "已查看";
+        updateStats();
+    }
+
+    function resetSubmitBtn() {
+        const btn = document.getElementById('submit-btn');
+        btn.innerText = '提交答案';
+        btn.disabled = false;
+        document.getElementById('feedback').style.display = 'none';
+    }
+
+    function changeQuestion(dir) {
+        const list = fullQuestionBank[state.subject];
+        const newIndex = state.index + dir;
+        if(newIndex >= 0 && newIndex < list.length) {
+            state.index = newIndex;
+            renderQuestion();
+        } else {
+            alert(dir > 0 ? "已经是最后一题" : "已经是第一题");
+        }
+    }
+
+    function jumpToQuestion() {
+        const val = parseInt(document.getElementById('jump-input').value);
+        const list = fullQuestionBank[state.subject];
+        if(val > 0 && val <= list.length) {
+            state.index = val - 1;
+            renderQuestion();
+        } else {
+            alert("题号超出范围");
+        }
+    }
+    
+    function updateStats() {
+        document.getElementById('stat-done').innerText = stats.done;
+        document.getElementById('stat-wrong').innerText = stats.wrong;
+    }
+
+</script>
+</body>
+</html>
