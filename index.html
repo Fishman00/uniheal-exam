@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>愈商学社 | 高级认证实战系统 (全量版)</title>
+    <title>愈商学社 | 高级认证实战系统 (全量完美版)</title>
     <style>
         :root {
             --primary-color: #2c5f58;
@@ -12,6 +12,7 @@
             --text-color: #333;
             --white: #ffffff;
             --error: #e74c3c;
+            --success: #27ae60;
         }
 
         body {
@@ -34,13 +35,15 @@
             width: 90%; max-width: 400px; text-align: center;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
+        .login-box h2 { color: var(--primary-color); margin-top: 0; }
         .login-box input {
             width: 100%; padding: 12px; margin-bottom: 1rem;
             border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;
+            font-size: 1rem;
         }
         .login-box button {
             width: 100%; padding: 12px; background-color: var(--accent-color);
-            color: white; border: none; border-radius: 6px; cursor: pointer;
+            color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1.1rem;
         }
 
         /* 布局 */
@@ -82,15 +85,20 @@
 
         .options label {
             display: block; padding: 12px 15px; border: 1px solid #eee;
-            border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: background 0.2s;
+            border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s;
         }
-        .options label:hover { background-color: #f9f9f9; }
+        .options label:hover { background-color: #f9f9f9; border-color: var(--accent-color); }
+        /* 选中状态 */
+        .options label.selected {
+            background-color: #f0f7f4; border-color: var(--primary-color);
+        }
         .options input { margin-right: 10px; }
 
         .btn {
             background-color: var(--primary-color); color: white; border: none;
             padding: 10px 25px; border-radius: 25px; cursor: pointer; font-size: 1rem; margin-right: 10px;
         }
+        .btn:disabled { background-color: #ccc; cursor: not-allowed; }
         .btn-outline {
             background-color: transparent; border: 1px solid var(--primary-color); color: var(--primary-color);
         }
@@ -98,33 +106,32 @@
         .feedback {
             margin-top: 1.5rem; padding: 1rem; border-radius: 8px;
             background-color: #e8f5e9; border: 1px solid #c8e6c9; display: none;
+            animation: fadeIn 0.3s;
         }
         .feedback.error { background-color: #ffebee; border: 1px solid #ffcdd2; }
 
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         textarea {
-            width: 100%; height: 120px; padding: 10px; border: 1px solid #ccc;
+            width: 100%; height: 120px; padding: 12px; border: 1px solid #ccc;
             border-radius: 8px; margin-bottom: 10px; font-family: inherit; box-sizing: border-box;
+            font-size: 1rem;
         }
 
-        .controls { display: flex; justify-content: space-between; margin-top: 2rem; }
+        .controls { display: flex; justify-content: space-between; margin-top: 2rem; align-items: center; }
         
-        .stats-panel {
-            display: flex; gap: 10px; margin-bottom: 20px;
-        }
+        .stats-panel { display: flex; gap: 10px; margin-bottom: 20px; }
         .stat-card {
             flex: 1; background: white; padding: 10px; border-radius: 8px;
-            text-align: center; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            text-align: center; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .stat-val { font-size: 1.2rem; font-weight: bold; color: var(--primary-color); display: block;}
+        .stat-val { font-size: 1.1rem; font-weight: bold; color: var(--primary-color); display: block;}
 
         .hidden { display: none !important; }
         
-        /* 搜索跳转栏 */
-        .jump-bar {
-            margin-bottom: 15px; text-align: right;
-        }
+        .jump-bar { margin-bottom: 15px; text-align: right; color: #666; font-size: 0.9rem; }
         .jump-bar input {
-            padding: 5px; border-radius: 4px; border: 1px solid #ddd; width: 60px; text-align: center;
+            padding: 5px; border-radius: 4px; border: 1px solid #ddd; width: 50px; text-align: center;
         }
     </style>
 </head>
@@ -133,8 +140,8 @@
 <div id="login-overlay">
     <div class="login-box">
         <h2>愈商学社·题库全量版</h2>
-        <p style="color:#666; margin-bottom: 20px;">请输入会员专属通行证</p>
-        <input type="password" id="access-code" placeholder="输入通行码">
+        <p style="color:#666; margin-bottom: 20px;">欢迎来到实战模拟系统</p>
+        <input type="password" id="access-code" placeholder="输入通行码 (默认: YSXS2025)">
         <button onclick="handleLogin()">解锁全套题库</button>
         <p id="login-msg" style="color: var(--error); margin-top: 10px; font-size: 0.9rem;"></p>
     </div>
@@ -144,7 +151,7 @@
     <header>
         <div>
             <h1 style="margin:0; font-size:1.2rem;">愈商学社</h1>
-            <span style="font-size:0.8rem; opacity:0.8;">UNIHEAL 认证实战系统</span>
+            <span style="font-size:0.8rem; opacity:0.8;">UNIHEAL 认证全真模拟</span>
         </div>
         <div class="user-info">
             <span id="member-id">学员：Guest</span>
@@ -153,9 +160,9 @@
     </header>
 
     <nav>
-        <button class="tab-btn active" onclick="switchSubject('subject1')">科目一：基础理论</button>
-        <button class="tab-btn" onclick="switchSubject('subject2')">科目二：技能实操</button>
-        <button class="tab-btn" onclick="switchSubject('subject3')">科目三：伦理法规</button>
+        <button class="tab-btn active" id="btn-subject1" onclick="switchSubject('subject1')">科目一：基础理论</button>
+        <button class="tab-btn" id="btn-subject2" onclick="switchSubject('subject2')">科目二：技能实操</button>
+        <button class="tab-btn" id="btn-subject3" onclick="switchSubject('subject3')">科目三：伦理法规</button>
     </nav>
 
     <main>
@@ -167,7 +174,7 @@
 
         <div class="jump-bar">
             跳转至第 <input type="number" id="jump-input" min="1"> 题 
-            <button class="btn-outline" style="padding: 4px 10px; font-size: 0.8rem;" onclick="jumpToQuestion()">GO</button>
+            <button class="btn-outline" style="padding: 4px 10px; font-size: 0.8rem;" onclick="jumpToQuestion()">跳转</button>
         </div>
 
         <div class="card" id="question-card">
@@ -175,7 +182,7 @@
         
         <div class="controls">
             <button class="btn btn-outline" onclick="changeQuestion(-1)">上一题</button>
-            <div style="text-align: center; color: #999; line-height: 40px;" id="page-indicator">1/1</div>
+            <div style="text-align: center; color: #999; font-size: 0.9rem;" id="page-indicator">1/1</div>
             <div>
                 <button class="btn" onclick="submitAnswer()" id="submit-btn">提交答案</button>
                 <button class="btn btn-outline" onclick="changeQuestion(1)">下一题</button>
@@ -186,10 +193,9 @@
 
 <script>
     // ==========================================
-    // ⚠️ 核心区域：请在此处粘贴原始文本
+    // ⚠️ 核心区域：请将 PDF 全文复制到下方对应的反引号中
     // ==========================================
     
-    // 1. 请将【科目一】PDF中的全部文字粘贴到下方的反引号 `` 之间
     const rawSubject1 = `
 科目一：基础理论模块(单选 180，多选 40，简答 40)
 
@@ -1931,18 +1937,21 @@ ESG 报告。请设计数据采集、隐私保护和反馈机制，确保员工�
 答案：系统评分
     `;
 
-    // ==========================================
-    // ⚠️ 智能解析引擎 (自动处理粘贴的文本)
+   // ==========================================
+    // 逻辑引擎
     // ==========================================
     const fullQuestionBank = { subject1: [], subject2: [], subject3: [] };
+    const PASS_CODE = "YSXS2025"; 
+    let state = { subject: 'subject1', index: 0, answeredQuestions: new Set() };
+    let stats = { done: 0, wrong: 0 };
 
     function parseRawText(text, subjectKey, defaultType, defaultCat) {
+        if(!text || text.includes('[在这里粘贴')) return;
         const lines = text.split('\n').map(l => l.trim()).filter(l => l);
         let currentQ = null;
-        let currentType = defaultType; // single, multiple, text
+        let currentType = defaultType; 
         let currentCategory = defaultCat;
 
-        // 识别科目一中的不同题型区块
         const typeKeywords = {
             "单选题": { type: "single", cat: "单选题" },
             "多选题": { type: "multiple", cat: "多选题" },
@@ -1952,7 +1961,6 @@ ESG 报告。请设计数据采集、隐私保护和反馈机制，确保员工�
         };
 
         lines.forEach(line => {
-            // 1. 检查是否切换了题型区块 (仅针对有混合题型的科目)
             for (let k in typeKeywords) {
                 if (line.includes(k) && (line.includes("题）") || line.includes("题)"))) {
                     currentType = typeKeywords[k].type;
@@ -1960,8 +1968,6 @@ ESG 报告。请设计数据采集、隐私保护和反馈机制，确保员工�
                 }
             }
 
-            // 2. 匹配题目 (支持 "1. " 或 "1、")
-            // 排除 "单选题（180 题）" 这种标题行，只匹配以数字开头且后面跟标点的
             const qMatch = line.match(/^(\d+)[.、]\s*(.*)/);
             if (qMatch) {
                 if (currentQ) fullQuestionBank[subjectKey].push(currentQ);
@@ -1969,7 +1975,7 @@ ESG 报告。请设计数据采集、隐私保护和反馈机制，确保员工�
                     id: parseInt(qMatch[1]),
                     type: currentType,
                     category: currentCategory,
-                    question: qMatch[2], // 初始题目内容
+                    question: qMatch[2],
                     options: [],
                     answer: "",
                     explanation: `出自${currentCategory}第${qMatch[1]}题`
@@ -1977,78 +1983,48 @@ ESG 报告。请设计数据采集、隐私保护和反馈机制，确保员工�
                 return;
             }
 
-            // 3. 如果当前行不是题目，且有currentQ，则可能是题目内容的延续、选项或答案
             if (currentQ) {
-                // 匹配选项 (A. xxx)
                 const optMatch = line.match(/^([A-E])[.、]\s*(.*)/);
                 if (optMatch && (currentQ.type === 'single' || currentQ.type === 'multiple')) {
-                    currentQ.options.push(line); // 保存完整选项文本
+                    currentQ.options.push(line);
                     return;
                 }
-
-                // 匹配答案
                 const ansMatch = line.match(/^答案[：:]\s*(.*)/);
                 if (ansMatch) {
                     let ansText = ansMatch[1].trim();
-                    if (currentQ.type === 'multiple') {
-                        currentQ.answer = ansText.split('').filter(c => /[A-E]/.test(c));
-                    } else {
-                        currentQ.answer = ansText;
-                    }
+                    currentQ.answer = (currentQ.type === 'multiple') ? 
+                        ansText.split('').filter(c => /[A-E]/.test(c)) : ansText;
                     return;
                 }
-
-                // 如果既不是选项也不是答案，且还没遇到选项/答案，可能是题目描述的第二行
                 if (currentQ.options.length === 0 && !currentQ.answer) {
-                    // 简单判断：如果这行不包含"[source"，则拼接到题目后
-                    if (!line.includes('[source')) {
-                        currentQ.question += " " + line;
-                    }
+                    if (!line.includes('[source')) currentQ.question += " " + line;
                 }
             }
         });
-
-        // 推入最后一题
         if (currentQ) fullQuestionBank[subjectKey].push(currentQ);
     }
 
-    // 系统启动时执行解析
     function initData() {
         parseRawText(rawSubject1, 'subject1', 'single', '单选题');
         parseRawText(rawSubject2, 'subject2', 'text', '案例分析');
         parseRawText(rawSubject3, 'subject3', 'text', '论述题');
-        console.log("题库解析完成", fullQuestionBank);
     }
-
-    // ==========================================
-    // 逻辑控制 (登录、交互)
-    // ==========================================
-    const PASS_CODE = "YSXS2025"; // ✅ 在这里设置你的社群密码
-    let state = { subject: 'subject1', index: 0, answers: {}, mode: 'practice' };
-    let stats = { done: 0, wrong: 0 };
-
-    window.onload = function() {
-        if(localStorage.getItem('uniheal_user')) {
-            showApp(localStorage.getItem('uniheal_user'));
-        }
-    };
 
     function handleLogin() {
         const input = document.getElementById('access-code').value;
         if(input === PASS_CODE) {
-            const userId = 'VIP_' + Math.floor(Math.random()*8888);
-            localStorage.setItem('uniheal_user', userId);
-            showApp(userId);
+            localStorage.setItem('uniheal_user', 'VIP_MEMBER');
+            showApp();
         } else {
-            document.getElementById('login-msg').innerText = "密码错误，请关注愈商学社公众号获取";
+            document.getElementById('login-msg').innerText = "通行码错误，请联系管理员获取。";
         }
     }
 
-    function showApp(userId) {
-        initData(); // 先解析数据
+    function showApp() {
+        initData();
         document.getElementById('login-overlay').style.display = 'none';
         document.getElementById('app-container').classList.remove('hidden');
-        document.getElementById('member-id').innerText = userId;
+        document.getElementById('member-id').innerText = "高级学员";
         loadSubject('subject1');
     }
 
@@ -2060,23 +2036,15 @@ ESG 报告。请设计数据采集、隐私保护和反馈机制，确保员工�
     function switchSubject(sub) {
         state.subject = sub;
         state.index = 0;
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if(btn.onclick.toString().includes(sub)) btn.classList.add('active');
-        });
-        loadSubject(sub);
-    }
-
-    function loadSubject(sub) {
-        state.index = 0;
-        updateStats();
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('btn-' + sub).classList.add('active');
         renderQuestion();
     }
 
     function renderQuestion() {
         const list = fullQuestionBank[state.subject];
         if(!list || list.length === 0) {
-            document.getElementById('question-card').innerHTML = "<p>数据加载中或无数据，请检查代码中的粘贴区域。</p>";
+            document.getElementById('question-card').innerHTML = "<p style='color:#888'>该科目题库尚未植入，请在代码 rawSubject 区域粘贴文本。</p>";
             return;
         }
         const data = list[state.index];
@@ -2086,10 +2054,7 @@ ESG 报告。请设计数据采集、隐私保护和反馈机制，确保员工�
         document.getElementById('stat-total').innerText = list.length;
 
         let html = `
-            <div class="question-meta">
-                <span class="badge">${data.category}</span>
-                <span>ID: ${data.id}</span>
-            </div>
+            <div class="question-meta"><span class="badge">${data.category}</span><span>ID: ${data.id}</span></div>
             <div class="question-text">${data.question}</div>
         `;
 
@@ -2097,64 +2062,68 @@ ESG 报告。请设计数据采集、隐私保护和反馈机制，确保员工�
             const inputType = data.type === 'single' ? 'radio' : 'checkbox';
             html += `<div class="options">`;
             data.options.forEach((opt) => {
-                // 提取选项字母，如 "A. xxx" -> value="A"
                 const val = opt.charAt(0); 
                 html += `
                     <label onclick="selectOption(this)">
-                        <input type="${inputType}" name="q_opt" value="${val}">
-                        ${opt}
+                        <input type="${inputType}" name="q_opt" value="${val}"> ${opt}
                     </label>
                 `;
             });
             html += `</div>`;
         } else {
-            html += `<textarea placeholder="【模拟实战】在此输入你的思考要点..."></textarea>`;
+            html += `<textarea id="text-ans" placeholder="在此输入你的分析思路..."></textarea>`;
         }
 
-        html += `
-            <div id="feedback" class="feedback">
-                <strong>💡 参考解析：</strong><br>
-                <div style="margin:5px 0; color:#2c5f58; font-weight:bold;">${Array.isArray(data.answer) ? data.answer.join('') : data.answer}</div>
-                <div style="font-size:0.9rem; color:#666;">${data.explanation}</div>
-            </div>
-        `;
-
+        html += `<div id="feedback" class="feedback"></div>`;
         card.innerHTML = html;
         resetSubmitBtn();
+    }
+
+    // 重点修正：选项点击处理函数
+    function selectOption(el) {
+        const type = el.querySelector('input').type;
+        if (type === 'radio') {
+            el.parentNode.querySelectorAll('label').forEach(l => l.classList.remove('selected'));
+        }
+        el.classList.toggle('selected');
     }
 
     function submitAnswer() {
         const list = fullQuestionBank[state.subject];
         const data = list[state.index];
         const feedback = document.getElementById('feedback');
-        
+        const qKey = state.subject + "_" + state.index;
+
         if(data.type === 'single' || data.type === 'multiple') {
             const checked = document.querySelectorAll('input[name="q_opt"]:checked');
-            if(checked.length === 0) return alert('请先选择答案');
+            if(checked.length === 0) return alert('请先选择一个答案');
             
             const userVal = Array.from(checked).map(c => c.value).sort();
             const correctVal = Array.isArray(data.answer) ? data.answer.sort() : [data.answer];
-            
             const isCorrect = JSON.stringify(userVal) === JSON.stringify(correctVal);
             
+            feedback.style.display = 'block';
             if(isCorrect) {
-                feedback.classList.remove('error');
-                feedback.innerHTML = `<strong>✅ 回答正确</strong>`;
-                stats.done++;
+                feedback.className = "feedback";
+                feedback.innerHTML = `<strong>✅ 回答正确！</strong><br><small>${data.explanation}</small>`;
             } else {
-                feedback.classList.add('error');
-                feedback.innerHTML = `<strong>❌ 回答错误</strong><br>正确答案：${correctVal.join('')}`;
-                stats.done++;
-                stats.wrong++;
+                feedback.className = "feedback error";
+                feedback.innerHTML = `<strong>❌ 回答错误</strong><br>正确答案：<b style="color:var(--primary-color)">${Array.isArray(data.answer)?data.answer.join(''):data.answer}</b><br><small>${data.explanation}</small>`;
+                if(!state.answeredQuestions.has(qKey)) stats.wrong++;
             }
         } else {
-            feedback.classList.remove('error');
+            feedback.className = "feedback";
+            feedback.style.display = 'block';
+            feedback.innerHTML = `<strong>📖 考点参考：</strong><br><div style="color:var(--primary-color);font-weight:bold;margin:5px 0;">${data.answer}</div><small>${data.explanation}</small>`;
         }
 
-        feedback.style.display = 'block';
+        if(!state.answeredQuestions.has(qKey)) {
+            stats.done++;
+            state.answeredQuestions.add(qKey);
+            updateStats();
+        }
         document.getElementById('submit-btn').disabled = true;
-        document.getElementById('submit-btn').innerText = "已查看";
-        updateStats();
+        document.getElementById('submit-btn').innerText = "已查看解析";
     }
 
     function resetSubmitBtn() {
@@ -2166,12 +2135,9 @@ ESG 报告。请设计数据采集、隐私保护和反馈机制，确保员工�
 
     function changeQuestion(dir) {
         const list = fullQuestionBank[state.subject];
-        const newIndex = state.index + dir;
-        if(newIndex >= 0 && newIndex < list.length) {
-            state.index = newIndex;
+        if (state.index + dir >= 0 && state.index + dir < list.length) {
+            state.index += dir;
             renderQuestion();
-        } else {
-            alert(dir > 0 ? "已经是最后一题" : "已经是第一题");
         }
     }
 
@@ -2181,8 +2147,6 @@ ESG 报告。请设计数据采集、隐私保护和反馈机制，确保员工�
         if(val > 0 && val <= list.length) {
             state.index = val - 1;
             renderQuestion();
-        } else {
-            alert("题号超出范围");
         }
     }
     
@@ -2191,6 +2155,9 @@ ESG 报告。请设计数据采集、隐私保护和反馈机制，确保员工�
         document.getElementById('stat-wrong').innerText = stats.wrong;
     }
 
+    window.onload = function() {
+        if(localStorage.getItem('uniheal_user')) showApp();
+    };
 </script>
 </body>
 </html>
