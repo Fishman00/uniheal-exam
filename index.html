@@ -1,31 +1,30 @@
 function handleLogin() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const feedback = document.getElementById('feedback');
-    
-    // Clear previous feedback
-    feedback.textContent = '';
-    feedback.style.color = '';
-    
-    // Simple validation
-    if (username === '' || password === '') {
-        feedback.textContent = 'Please fill in both fields.';
-        feedback.style.color = 'red';
+    const passwordInput = document.getElementById('password').value;
+    const feedbackElement = document.getElementById('feedback');
+    const loadingMessage = 'Processing, please wait...';
+
+    // Check if password input is empty
+    if (!passwordInput) {
+        feedbackElement.innerHTML = '<span style="color:red;">Error: Password cannot be empty!</span>';
+        console.log('Login attempt failed: Password input is empty.');
         return;
     }
 
-    // Simulate loading
-    feedback.textContent = 'Logging in, please wait...';
-    feedback.style.color = 'blue';
-    
+    // Show loading message
+    feedbackElement.innerHTML = loadingMessage;
+    console.log('Loading message displayed.');
+
+    // Simulate an asynchronous operation
     setTimeout(() => {
-        // Simulate successful login (you can replace this with real validation logic)
-        if (username === 'admin' && password === 'password123') {
-            feedback.textContent = 'Login successful!';
-            feedback.style.color = 'green';
+        const PASS_CODE = 'expectedPassCode'; // Use your actual passcode
+
+        // Compare input with PASS_CODE constant
+        if (passwordInput === PASS_CODE) {
+            feedbackElement.innerHTML = '<span style="color:green;">Success: You are logged in!</span>';
+            console.log('Login successful.');
         } else {
-            feedback.textContent = 'Invalid username or password.';
-            feedback.style.color = 'red';
+            feedbackElement.innerHTML = '<span style="color:red;">Error: Incorrect password!</span>';
+            console.log('Login attempt failed: Incorrect password.');
         }
-    }, 2000); // Simulate a 2-second delay for better UX
+    }, 2000); // Simulating a 2 second delay to mimic loading
 }
