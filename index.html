@@ -1,30 +1,30 @@
+<script>
 function handleLogin() {
-    const passwordInput = document.getElementById('password').value;
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
     const feedbackElement = document.getElementById('feedback');
-    const loadingMessage = 'Processing, please wait...';
 
-    // Check if password input is empty
-    if (!passwordInput) {
-        feedbackElement.innerHTML = '<span style="color:red;">Error: Password cannot be empty!</span>';
-        console.log('Login attempt failed: Password input is empty.');
+    // Clear previous feedback messages
+    feedbackElement.innerText = '';
+
+    // Validation
+    if (!username || !password) {
+        feedbackElement.innerText = 'Please enter both username and password.';
+        feedbackElement.style.color = 'red';
         return;
     }
 
-    // Show loading message
-    feedbackElement.innerHTML = loadingMessage;
-    console.log('Loading message displayed.');
-
-    // Simulate an asynchronous operation
+    // Simulate an API call
     setTimeout(() => {
-        const PASS_CODE = 'expectedPassCode'; // Use your actual passcode
-
-        // Compare input with PASS_CODE constant
-        if (passwordInput === PASS_CODE) {
-            feedbackElement.innerHTML = '<span style="color:green;">Success: You are logged in!</span>';
-            console.log('Login successful.');
+        // Mock login success
+        if (username === 'admin' && password === 'admin') {
+            feedbackElement.innerText = 'Login successful!';
+            feedbackElement.style.color = 'green';
+            // Redirect or further actions here
         } else {
-            feedbackElement.innerHTML = '<span style="color:red;">Error: Incorrect password!</span>';
-            console.log('Login attempt failed: Incorrect password.');
+            feedbackElement.innerText = 'Invalid credentials, please try again.';
+            feedbackElement.style.color = 'red';
         }
-    }, 2000); // Simulating a 2 second delay to mimic loading
+    }, 1000);
 }
+</script>
